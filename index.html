@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/js/all.min.js"></script>
+    <title>shopping cart</title>
+</head>
+
+<body>
+    <nav>
+        <div class="nav container">
+            <div class="nav__toggle"><span></span></div>
+            <h2>Mari's shopping</h2>
+            <div class="nav__cart">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <span class="nav__cart-num">3</span>
+            </div>
+        </div>
+    </nav>
+    <main class="main container">
+        <h1>our product</h1>
+        <div class="products"></div>
+    </main>
+    <div class="modal">
+        <div class="modal__close-btn">
+            <i class="fa-solid fa-xmark"></i>
+        </div>
+        <h2 class="modal__title">your cart</h2>
+        <ul class="cart-list">
+            <li class="cart-item">
+                <div class="cart-item__img">
+                    <img src="./images/product-1.jpeg" alt="product-1" />
+                </div>
+                <div class="cart-item__text">
+                    <h4>queen panel bed</h4>
+                    <span>10.99$</span>
+                </div>
+                <div class="cart-item__counter">
+                    <i class="fa-solid fa-angle-up"></i>
+                    <span>a</span>
+                    <i class="fa-solid fa-angle-down"></i>
+                </div>
+
+                <button class="btn"><i class="fa-solid fa-trash"></i></button>
+            </li>
+        </ul>
+        <div class="modal__footer">
+            <p class="cart-total-price">10.99 $</p>
+            <button class="btn btn--secondary">clear cart</button>
+            <button class="btn btn--primary">confirm</button>
+        </div>
+    </div>
+    <div class="backdrop"></div>
+</body>
+
+</html>
