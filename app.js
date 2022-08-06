@@ -1,5 +1,8 @@
 import { productData } from "./productdata.js";
 const productsContainer = document.querySelector(".products");
+const cartList = document.querySelector(".cart-list");
+const cartTotalPrice = document.querySelector(".cart-total-price");
+const navCartNum = document.querySelector(".nav__cart-num");
 let cart = [];
 class Products {
     getProduct() {
@@ -31,26 +34,124 @@ class UI {
         const addToCartBtn = document.querySelectorAll(".products-item__text .btn");
         const buttons = [...addToCartBtn];
         buttons.forEach((btn) => {
-            const id = btn.dataset.id;
+            let id = btn.dataset.id;
             cart = Storage.getCart();
-            // the product id exist in cart or not//
-            let isInCart = cart.find((p) => p.id === parseInt(id));
+            // the product id exist in cart or not //
+            let isInCart = cart.find((cItem) => cItem.id == id);
             if (isInCart) {
                 btn.innerText = "in Cart";
                 btn.disabled = "true";
             }
             btn.addEventListener("click", (e) => {
-                let id = e.target.dataset.id;
                 e.target.innerText = "in Cart";
                 e.target.disabled = "true";
 
                 let addedProduct = Storage.getProduct(id);
-
                 cart = [...cart, {...addedProduct, quantity: 1 }];
 
                 Storage.saveCart(cart);
+                this.displayCart();
+                this.setCartNum();
             });
         });
+    }
+    displayCart() {
+        cart = Storage.getCart();
+        let cartItems = "";
+        let totalPrice = 0;
+        cart.forEach((CItem) => {
+            cartItems += `<li class="cart-item">
+            <div class="cart-item__img">
+                <img src="${CItem.image}" alt="${CItem.title}" />
+            </div>
+            <div class="cart-item__text">
+                <h4>${CItem.title}</h4>
+                <span>${CItem.price} $</span>
+            </div>
+            <div class="cart-item__counter">
+                <button class="btn increament-btn" data-id="${CItem.id}"><i class="fa-solid fa-angle-up"></i></button>
+                <span>${CItem.quantity}</span>
+                <button class="btn decreament-btn" data-id="${CItem.id}"><i class="fa-solid fa-angle-down"></i></button>            
+            </div>
+
+            <button class="btn clear-item" data-id="${CItem.id}"><i class="fa-solid fa-trash" > </i></button>
+        </li>`;
+            totalPrice += CItem.quantity * CItem.price;
+        });
+        cartList.innerHTML = cartItems;
+        cartTotalPrice.innerText = totalPrice.toFixed(2) + " $";
+        const clearCartBtn = document.querySelector(
+            ".modal__footer .btn--secondary"
+        );
+        const removeCartItemBtn = document.querySelectorAll(
+            ".cart-item .clear-item"
+        );
+        clearCartBtn.addEventListener("click", () => {
+            cart.forEach((cItem) => {
+                let id = cItem.id;
+                this.clearCartItem(id);
+            });
+            closeModal();
+        });
+        removeCartItemBtn.forEach((rBtn) => {
+            rBtn.addEventListener("click", () => {
+                let id = rBtn.dataset.id;
+                this.clearCartItem(id);
+            });
+        });
+        //increament and decreament cart item
+        const increamentBtn = document.querySelectorAll(
+            ".cart-item .increament-btn"
+        );
+        const decreamentBtn = document.querySelectorAll(
+            ".cart-item .decreament-btn"
+        );
+        increamentBtn.forEach((iBtn) => {
+            iBtn.addEventListener("click", () => {
+                let id = iBtn.dataset.id;
+                cart.forEach((cItem) => {
+                    if (cItem.id == id) cItem.quantity++;
+                });
+                Storage.saveCart(cart);
+                this.displayCart();
+                this.setCartNum();
+            });
+        });
+        decreamentBtn.forEach((iBtn) => {
+            iBtn.addEventListener("click", () => {
+                let id = iBtn.dataset.id;
+                cart.forEach((cItem) => {
+                    if (cItem.id == id) {
+                        if (cItem.quantity > 1) cItem.quantity--;
+                        else if ((cItem.quantity = 1)) this.clearCartItem(id);
+                    }
+                });
+                Storage.saveCart(cart);
+                this.displayCart();
+                this.setCartNum();
+            });
+        });
+    }
+    setCartNum() {
+        cart = Storage.getCart();
+        let cartNum = cart.reduce((acc, curr) => {
+            return (acc += curr.quantity);
+        }, 0);
+        navCartNum.innerText = parseInt(cartNum);
+    }
+    clearCartItem(id) {
+        cart = Storage.getCart();
+        cart = cart.filter((cItem) => {
+            return cItem.id != id;
+        });
+        //change "in cart" to " add to cart"
+        const itemsBtn = [...document.querySelectorAll(".products-item .btn")];
+        let removedItemBtn = itemsBtn.find((btn) => btn.dataset.id == id);
+        removedItemBtn.innerText = "add to cart";
+
+        Storage.saveCart(cart);
+        this.displayCart();
+        this.setCartNum();
     }
 }
 class Storage {
@@ -58,8 +159,8 @@ class Storage {
         localStorage.setItem("products", JSON.stringify(productItems));
     }
     static getProduct(id) {
-        let _products = JSON.parse(localStorage.getItem("products"));
-        return _products.find((p) => p.id === parseInt(id));
+        const _products = JSON.parse(localStorage.getItem("products"));
+        return _products.find((p) => p.id == id);
     }
 
     static saveCart(cart) {
@@ -75,11 +176,13 @@ class Storage {
 document.addEventListener("DOMContentLoaded", () => {
     const products = new Products();
     const ProductsData = products.getProduct();
-    const ui = new UI();
-    ui.displayProduct(ProductsData);
-    ui.getAddToCartBtn();
     const storage = new Storage();
     Storage.saveProduct(ProductsData);
+    const ui = new UI();
+    ui.displayProduct(ProductsData);
+    ui.displayCart();
+    ui.getAddToCartBtn();
+    ui.setCartNum();
 });
 
 const cartIcon = document.querySelector(".nav__cart");

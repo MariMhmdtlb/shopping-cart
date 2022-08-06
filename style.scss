@@ -198,9 +198,9 @@ nav {
 }
 
 .modal {
-    height: 100vh;
+    height: 100%;
     width: 60rem;
-    position: absolute;
+    position: fixed;
     z-index: 3;
     top: 0;
     right: 0;
@@ -226,6 +226,7 @@ nav {
             justify-content: space-between;
             align-items: center;
             gap: 4rem;
+            margin-bottom: 2rem;
             &__img {
                 width: 35%;
                 height: 100%;
@@ -248,14 +249,14 @@ nav {
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                .fa-angle-up {
+                .increament-btn {
                     color: var(--primaryColor);
                 }
-                .fa-angle-down {
+                .decreament-btn {
                     color: var(--mainRed);
                 }
             }
-            & .btn {
+            & .btn.clear-item {
                 width: 1.7rem;
                 font-size: 2rem;
             }
